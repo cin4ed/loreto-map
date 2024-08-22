@@ -12,6 +12,8 @@ export default function Map() {
   const [lng, setLng] = useState(-111.3415);
   const [lat, setLat] = useState(26.0143);
   const [zoom, setZoom] = useState(14.13);
+  const [selectedFeatureProperties, setSelectedFeatureProperties] =
+    useState(null);
 
   useEffect(() => {
     // Initialize map only once
@@ -90,7 +92,7 @@ export default function Map() {
   });
 
   return (
-    <div className="min-h-screen col-start-3 col-span-4 border-l relative">
+    <div className="relative">
       <div className="absolute z-10 m-2 top-0 left-0 text-xs text-muted-foreground rounded border p-1 bg-muted opacity-50 hover:opacity-100">
         Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
       </div>

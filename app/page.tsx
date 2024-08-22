@@ -13,63 +13,76 @@ const secondaryZoneTypes = [
     id: 1,
     key: "H",
     name: "Habitacional",
+    color: "#FF5733", // Rojo
   },
   {
     id: 2,
     key: "HP",
     name: "Habitacional Plurifamiliar",
+    color: "#33FF57", // Verde
   },
   {
     id: 3,
     key: "TR",
     name: "Turístico Residencial",
+    color: "#3357FF", // Azul
   },
   {
     id: 4,
     key: "CU",
     name: "Comercio y Servicios",
+    color: "#FF33A8", // Rosa
   },
   {
     id: 5,
     key: "M",
     name: "Mixto Comercial",
+    color: "#FF8C33", // Naranja
   },
   {
     id: 6,
     key: "E",
     name: "Equipamiento",
+    color: "#33FFF2", // Cian
   },
   {
     id: 7,
     key: "IN",
     name: "Industrial",
+    color: "#FFC733", // Amarillo
   },
   {
     id: 8,
     key: "Z",
     name: "Zona Verde",
+    color: "#33FF85", // Verde Lima
   },
   {
     id: 9,
     key: "PC",
     name: "Preservación Conservación",
+    color: "#C733FF", // Púrpura
   },
   {
     id: 10,
     key: "V",
     name: "Vialidades",
+    color: "#FF3333", // Rojo Brillante
   },
   {
     id: 11,
     key: "AT",
-    name: "Alojamiento Turístico",
+    name: "Alojamiento Turístico",
+    color: "#33A8FF", // Azul Claro
   },
   {
     id: 12,
     key: "CO",
     name: "Corredor Turístico",
+    color: "#FF6F33", // Mandarina
   },
 ];
+
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
