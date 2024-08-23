@@ -11,7 +11,7 @@ export default function Map() {
   const map = useRef<mapboxgl.Map | null>(null);
   const [lng, setLng] = useState(-111.3415);
   const [lat, setLat] = useState(26.0143);
-  const [zoom, setZoom] = useState(14.13);
+  const [zoom, setZoom] = useState(16.46);
   const [selectedFeatureProperties, setSelectedFeatureProperties] =
     useState(null);
 
@@ -36,6 +36,12 @@ export default function Map() {
     });
 
     map.current.on("load", () => {
+      // set camera with angle an position
+      map.current.setCenter([lng, lat]); // Set center [longitude, latitude]
+      map.current.setZoom(zoom);            // Set zoom level
+      map.current.setPitch(70);           // Set pitch (camera angle)
+      map.current.setBearing(45);
+
       map.current.on("click", "ezone-uso-de-suelo", (e) => {
         const properties = e.features[0].properties;
         setSelectedFeatureProperties(properties);
