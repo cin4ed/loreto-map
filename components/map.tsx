@@ -1,113 +1,28 @@
 "use client";
 
 import mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
+// import "mapbox-gl/dist/mapbox-gl.css";
 import { useRef, useEffect, useState } from "react";
+import { type ZoneType, zoneTypes, getZoneTypeByKey } from "@/lib/utils";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
 
-const zones = {
-  "H": {
-    key: "H",
-    name: "Habitacional",
-    color: "#FF5733",
-    class: "bg-[#FF5733]",
-    description: "Zona destinada a la construcción de viviendas unifamiliares.",
-  },
-  "HP": {
-    key: "HP",
-    name: "Habitacional Plurifamiliar",
-    color: "#33FF57",
-    class: "bg-[#33FF57]",
-    description: "Zona destinada a la construcción de viviendas multifamiliares.",
-  },
-  "TR": {
-    key: "TR",
-    name: "Turístico Residencial",
-    color: "#3357FF",
-    class: "bg-[#3357FF]",
-    description: "Zona destinada a la construcción de viviendas vacacionales.",
-  },
-  "CU": {
-    key: "CU",
-    name: "Comercio y Servicios",
-    color: "#FF33A8",
-    class: "bg-[#FF33A8]",
-    description: "Zona destinada a la construcción de locales comerciales.",
-  },
-  "M": {
-    key: "M",
-    name: "Mixto Comercial",
-    color: "#FF8C33",
-    class: "bg-[#FF8C33]",
-    description: "Zona destinada a la construcción de locales comerciales y viviendas.",
-  },
-  "E": {
-    key: "E",
-    name: "Equipamiento",
-    color: "#33FFF2",
-    class: "bg-[#33FFF2]",
-    description: "Zona destinada a la construcción de equipamiento urbano.",
-  },
-  "IN": {
-    key: "IN",
-    name: "Industrial",
-    color: "#FFC733",
-    class: "bg-[#FFC733]",
-    description: "Zona destinada a la construcción de naves industriales.",
-  },
-  "Z": {
-    key: "Z",
-    name: "Zona Verde",
-    color: "#33FF85",
-    class: "bg-[#33FF85]",
-    description: "Zona destinada a la conservación de áreas verdes.",
-  },
-  "PC": {
-    key: "PC",
-    name: "Preservación Conservación",
-    color: "#C733FF",
-    class: "bg-[#C733FF]",
-    description: "Zona destinada a la conservación de patrimonio histórico.",
-  },
-  "V": {
-    key: "V",
-    name: "Vialidades",
-    color: "#FF3333",
-    class: "bg-[#FF3333]",
-    description: "Zona destinada a la construcción de vialidades.",
-  },
-  "AT": {
-    key: "AT",
-    name: "Alojamiento Turístico",
-    color: "#33A8FF",
-    class: "bg-[#33A8FF]",
-    description: "Zona destinada a la construcción de hoteles y moteles.",
-  },
-  "CO": {
-    key: "CO",
-    name: "Corredor Turístico",
-    color: "#FF6F33",
-    class: "bg-[#FF6F33]",
-    description: "Zona destinada a la construcción de corredores turísticos.",
-  },
-}
-
 export default function Map() {
-  const mapContainer = useRef<HTMLDivElement>();
+  const mapContainer = useRef<HTMLElement>();
   const map = useRef<mapboxgl.Map | null>(null);
   const [lng, setLng] = useState(-111.3415);
   const [lat, setLat] = useState(26.0143);
   const [zoom, setZoom] = useState(16.46);
-  const [selectedZone, setSelectedZone] = useState(null);
-  const [hoveredZone, setHoveredZone] = useState(null);
+  const [selectedZone, setSelectedZone] = useState<ZoneType | null>(null);
+  const [hoveredZone, setHoveredZone] = useState<ZoneType | null>(null);
 
   useEffect(() => {
     // Initialize map only once
     if (map.current) return;
 
+    // Initialize map
     map.current = new mapboxgl.Map({
-      container: mapContainer.current,
+      container: mapContainer.current || "",
       style: "mapbox://styles/kenneth-quintero/cm043gkrp00eo01pwcjwxfbmj",
       center: [lng, lat],
       zoom: 14.7,
@@ -116,86 +31,108 @@ export default function Map() {
     // Add navigation controls
     map.current.addControl(new mapboxgl.NavigationControl());
 
-    // Get 
+    // Update the lng, lat and zoom state when the map moves
     map.current.on("move", () => {
-      setLng(map.current.getCenter().lng.toFixed(4));
-      setLat(map.current.getCenter().lat.toFixed(4));
-      setZoom(map.current.getZoom().toFixed(2));
+      const lng = parseFloat(map.current!.getCenter().lng.toFixed(4));
+      const lat = parseFloat(map.current!.getCenter().lat.toFixed(4));
+      const zoom = parseFloat(map.current!.getZoom().toFixed(2));
+
+      setLng(lng);
+      setLat(lat);
+      setZoom(zoom);
     });
 
+    // Handle map load
     map.current.on("load", () => {
       // Fly to the location
-      map.current?.flyTo({
-        zoom: zoom,
-        pitch: 70,
-        bearing: 45,
-        speed: 0.5,
-      });
+      // map.current?.flyTo({
+      //   zoom: zoom,
+      //   pitch: 70,
+      //   bearing: 45,
+      //   speed: 0.5,
+      // });
 
-      // Get zone properties on click
-      map.current.on("click", "ezone-dataset", (e) => {
-        const zone = e.features[0].properties;
-        setSelectedZone(zone);
-        console.log(zone);
-      });
-
-      // Handle when the mouse hover over a zone
-      map.current.on("mouseenter", "ezone-dataset", function (e) {
+      // Handle when the mouse hover over a zone (polygon)
+      map.current!.on("mouseenter", "ezone-dataset", function (e) {
         // Change the cursor to a pointer when the mouse is over a zone
-        map.current.getCanvas().style.cursor = "pointer";
+        map.current!.getCanvas().style.cursor = "pointer";
 
         // Get the zone when the mouse hovers over it
         const zoneKey = e.features[0].properties.secondaryZone;
-        const zone = zones[zoneKey];
+        const zone = getZoneTypeByKey(zoneKey, zoneTypes);
         setHoveredZone(zone);
       });
 
-      map.current.on("mouseleave", "ezone-dataset", function () {
+      // Handle when the mouse leaves a zone (polygon)
+      map.current!.on("mouseleave", "ezone-dataset", function () {
         // Reset the cursor when the mouse leaves the zone
-        map.current.getCanvas().style.cursor = "";
+        map.current!.getCanvas().style.cursor = "";
 
         // Remove the hovered zone
         setHoveredZone(null);
       });
 
-      // Add a source for the highlighted polygon
-      // map.current.addSource("highlighted-polygon", {
-      //   type: "geojson",
-      //   data: {
-      //     type: "FeatureCollection",
-      //     features: [],
-      //   },
-      // });
+      // Add a source for the selected polygon, so we can highlight it
+      map.current!.addSource("selected-polygon", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: [],
+        },
+      });
 
       // Add a layer to display the highlighted polygon
-      // map.current.addLayer({
-      //   id: "highlighted-polygon-layer",
-      //   type: "line",
-      //   source: "highlighted-polygon",
-      //   paint: {
-      //     "line-color": "#FF0000", // Outline color (e.g., red)
-      //     "line-width": 3, // Width of the outline
-      //   },
-      // });
+      map.current!.addLayer({
+        id: "highlighted-polygon-layer",
+        type: "line",
+        source: "selected-polygon",
+        paint: {
+          "line-color": "#555555",
+          "line-width": 2,
+        },
+      });
 
-      // Detect clicks on the polygon layer
-      // map.current.on("click", "ezone-uso-de-suelo", function (e) {
-      //   var clickedPolygon = e.features[0];
+      // Handle clicks on the polygon layer
+      map.current!.on("click", "ezone-dataset", (e) => {
+        // Get zone properties on click
+        const zoneKey = e.features[0].properties.secondaryZone;
+        const zone = getZoneTypeByKey(zoneKey, zoneTypes);
+        setSelectedZone(zone);
 
-      //   // Update the source with the clicked polygon data
-      //   map.current.getSource("highlighted-polygon").setData({
-      //     type: "FeatureCollection",
-      //     features: [clickedPolygon],
-      //   });
+        // Get the clicked polygon
+        const clickedPolygon = e.features[0];
+        map.current!.getSource("selected-polygon").setData({
+          type: "FeatureCollection",
+          features: [clickedPolygon],
+        });
 
-        // // Optionally, show the properties in a popup
-        // new mapboxgl.Popup()
-        //   .setLngLat(e.lngLat)
-        //   .setHTML(
-        //     `<strong>${clickedPolygon.properties.name}</strong><br>Type: ${clickedPolygon.properties.type}`
-        //   )
-        //   .addTo(map.current);
-      // });
+        // Build the popup HTML
+        const popupHTML = `
+          <div class="flex flex-col gap-2">
+            <div class="flex gap-2 items-center">
+              <div class="h-5 w-5 ${zone?.bgClass} rounded border border-foreground/20 text-[.7rem] flex justify-center items-center">${zone?.key}</div>
+              <p class="text-sm">${zone?.name}</p>
+            </div>
+            <p class="text-sm text-muted-foreground">${zone?.description}</p>
+          </div>
+        `;
+
+        // Show a popup with the zone information
+        new mapboxgl.Popup({
+          closeButton: false,
+          // closeOnClick: false,
+        })
+          .setLngLat(e.lngLat)
+          .setHTML(popupHTML)
+          .addTo(map.current!);
+
+        // Fly to the clicked polygon
+        map.current?.flyTo({
+          center: e.lngLat,
+          zoom: 16.46,
+          speed: 0.5,
+        });
+      });
     });
   });
 
@@ -208,7 +145,12 @@ export default function Map() {
   return (
     <div className="relative">
       {/* Show satellite layer button */}
-      <button onClick={toggleSatelliteLayer} className="absolute z-10 top-24 right-0 m-2 p-2 rounded border bg-background block w-8 h-8 text-xs shadow hover:bg-background/20 active:bg-secondary">S</button>
+      <button
+        onClick={toggleSatelliteLayer}
+        className="absolute z-10 top-24 right-0 m-2 p-2 rounded border bg-background block w-8 h-8 text-xs shadow hover:bg-background/20 active:bg-secondary"
+      >
+        S
+      </button>
       {/* Show lng, lat and zoom area */}
       <div className="absolute z-10 m-2 top-0 left-0 text-xs text-muted-foreground rounded border p-1 bg-muted opacity-50 hover:opacity-100">
         Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
@@ -216,7 +158,7 @@ export default function Map() {
       {/* Show hovered zone type */}
       {hoveredZone && (
         <div className="absolute z-10 left-0 bottom-0 m-2 p-2 bg-background flex gap-2 items-center border rounded-md">
-          <div className={`h-4 w-4 rounded ${hoveredZone.class}`}></div>
+          <div className={`h-4 w-4 rounded ${hoveredZone.bgClass}`}></div>
           <p>{hoveredZone.name}</p>
         </div>
       )}
