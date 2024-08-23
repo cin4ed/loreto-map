@@ -156,7 +156,7 @@ export default function Home() {
                 </p>
                 <div className="grid grid-cols-2 gap-2 mt-2">
                   {secondaryZoneTypes.map((type) => (
-                    <div className="text-xs flex gap-2 border rounded p-1 cursor-pointer hover:bg-zinc-100">
+                    <div className="text-xs flex gap-2 border rounded p-1 cursor-pointer hover:bg-zinc-100" key={type.id}>
                       <div className={`w-4 h-4 rounded ${colorVariants[type.key]} opacity-80`}></div>
                       <span>{type.name}</span>
                     </div>
