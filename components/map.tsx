@@ -199,8 +199,17 @@ export default function Map() {
     });
   });
 
+  function toggleSatelliteLayer() {
+    const source = map.current?.getStyle().source;
+    map.current?.setStyle("mapbox://styles/mapbox/satellite-streets-v11");
+    // map.current?.addSource("ezone-dataset", source);
+  }
+
   return (
     <div className="relative">
+      {/* Show satellite layer button */}
+      <button onClick={toggleSatelliteLayer} className="absolute z-10 top-24 right-0 m-2 p-2 rounded border bg-background block w-8 h-8 text-xs shadow hover:bg-background/20 active:bg-secondary">S</button>
+      {/* Show lng, lat and zoom area */}
       <div className="absolute z-10 m-2 top-0 left-0 text-xs text-muted-foreground rounded border p-1 bg-muted opacity-50 hover:opacity-100">
         Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
       </div>
