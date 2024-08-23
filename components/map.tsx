@@ -16,6 +16,7 @@ export default function Map() {
   const [zoom, setZoom] = useState(16.46);
   const [selectedZone, setSelectedZone] = useState<ZoneType | null>(null);
   const [hoveredZone, setHoveredZone] = useState<ZoneType | null>(null);
+  const [showSatelliteToggleBtn, setShowSatelliteToggleBtn] = useState(false);
   const [satelliteStyleActive, setSatelliteStyleActive] = useState(false);
 
   useEffect(() => {
@@ -46,6 +47,9 @@ export default function Map() {
 
     // Handle map load
     map.current.on("load", () => {
+      // Show the satellite toggle button
+      setShowSatelliteToggleBtn(true);
+
       // Fly to the location
       map.current?.flyTo({
         zoom: zoom,
@@ -102,11 +106,11 @@ export default function Map() {
         setSelectedZone(zone);
 
         // Get the clicked polygon
-        const clickedPolygon = e.features[0];
-        map.current!.getSource("selected-polygon").setData({
-          type: "FeatureCollection",
-          features: [clickedPolygon],
-        });
+        // const clickedPolygon = e.features[0];
+        // map.current!.getSource("selected-polygon").setData({
+        //   type: "FeatureCollection",
+        //   features: [clickedPolygon],
+        // });
 
         // Build the popup HTML
         const popupHTML = `
@@ -122,7 +126,6 @@ export default function Map() {
         // Show a popup with the zone information
         new mapboxgl.Popup({
           closeButton: false,
-          // closeOnClick: false,
         })
           .setLngLat(e.lngLat)
           .setHTML(popupHTML)
@@ -138,6 +141,17 @@ export default function Map() {
     });
   });
 
+  // map.current?.on("style.load", () => {
+  //   // Add a source for the selected polygon, so we can highlight it
+  //   map.current!.addSource("selected-polygon", {
+  //     type: "geojson",
+  //     data: {
+  //       type: "FeatureCollection",
+  //       features: [],
+  //     },
+  //   });
+  // });
+
   function toggleSatelliteLayer() {
     if (satelliteStyleActive) {
       map.current?.setStyle(
@@ -148,6 +162,16 @@ export default function Map() {
         "mapbox://styles/kenneth-quintero/cm0779bkn00l901rba1jl7apd",
       );
     }
+    // // Add a layer to display the highlighted polygon
+    // map.current!.addLayer({
+    //   id: "highlighted-polygon-layer",
+    //   type: "line",
+    //   source: "selected-polygon",
+    //   paint: {
+    //     "line-color": "#555555",
+    //     "line-width": 2,
+    //   },
+    // });
 
     setSatelliteStyleActive(!satelliteStyleActive);
   }
@@ -155,12 +179,14 @@ export default function Map() {
   return (
     <div className="relative">
       {/* Show satellite layer button */}
-      <button
-        onClick={toggleSatelliteLayer}
-        className="absolute z-10 top-24 right-0 m-2 p-2 rounded border bg-background block w-8 h-8 text-xs shadow hover:bg-background/20 active:bg-secondary"
-      >
-        {satelliteStyleActive ? "🌍" : "🛰️"}
-      </button>
+      {showSatelliteToggleBtn && (
+        <button
+          onClick={toggleSatelliteLayer}
+          className="absolute z-10 top-24 right-0 m-2 p-2 rounded border bg-background block w-8 h-8 text-xs shadow hover:bg-background/20 active:bg-secondary"
+        >
+          {satelliteStyleActive ? "🌍" : "🛰️"}
+        </button>
+      )}
       {/* Show lng, lat and zoom area */}
       <div className="absolute z-10 m-2 top-0 left-0 text-xs text-muted-foreground rounded border p-1 bg-muted opacity-50 hover:opacity-100">
         Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
