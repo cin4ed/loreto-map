@@ -45,12 +45,12 @@ export default function Map() {
     // Handle map load
     map.current.on("load", () => {
       // Fly to the location
-      // map.current?.flyTo({
-      //   zoom: zoom,
-      //   pitch: 70,
-      //   bearing: 45,
-      //   speed: 0.5,
-      // });
+      map.current?.flyTo({
+        zoom: zoom,
+        pitch: 70,
+        bearing: 45,
+        speed: 0.5,
+      });
 
       // Handle when the mouse hover over a zone (polygon)
       map.current!.on("mouseenter", "ezone-dataset", function (e) {
