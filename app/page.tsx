@@ -8,7 +8,95 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MapIcon, SearchIcon, BuildingIcon, StoreIcon } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { zoneTypes } from "@/lib/utils";
+
+const secondaryZoneTypes = [
+  {
+    id: 1,
+    key: "H",
+    name: "Habitacional",
+    color: "#FF5733", // Rojo
+    description: "Zona destinada a la construcción de viviendas unifamiliares.",
+  },
+  {
+    id: 2,
+    key: "HP",
+    name: "Habitacional Plurifamiliar",
+    color: "#33FF57", // Verde
+    description:
+      "Zona destinada a la construcción de viviendas multifamiliares.",
+  },
+  {
+    id: 3,
+    key: "TR",
+    name: "Turístico Residencial",
+    color: "#3357FF", // Azul
+    description: "Zona destinada a la construcción de viviendas vacacionales.",
+  },
+  {
+    id: 4,
+    key: "CU",
+    name: "Comercio y Servicios",
+    color: "#FF33A8", // Rosa
+    description: "Zona destinada a la construcción de locales comerciales.",
+  },
+  {
+    id: 5,
+    key: "M",
+    name: "Mixto Comercial",
+    color: "#FF8C33", // Naranja
+    description:
+      "Zona destinada a la construcción de locales comerciales y viviendas.",
+  },
+  {
+    id: 6,
+    key: "E",
+    name: "Equipamiento",
+    color: "#33FFF2", // Cian
+    description: "Zona destinada a la construcción de equipamiento urbano.",
+  },
+  {
+    id: 7,
+    key: "IN",
+    name: "Industrial",
+    color: "#FFC733", // Amarillo
+    description: "Zona destinada a la construcción de naves industriales.",
+  },
+  {
+    id: 8,
+    key: "Z",
+    name: "Zona Verde",
+    color: "#33FF85", // Verde Lima
+    description: "Zona destinada a la conservación de áreas verdes.",
+  },
+  {
+    id: 9,
+    key: "PC",
+    name: "Preservación Conservación",
+    color: "#C733FF", // Púrpura
+    description: "Zona destinada a la conservación de patrimonio histórico.",
+  },
+  {
+    id: 10,
+    key: "V",
+    name: "Vialidades",
+    color: "#FF3333", // Rojo Brillante
+    description: "Zona destinada a la construcción de vialidades.",
+  },
+  {
+    id: 11,
+    key: "AT",
+    name: "Alojamiento Turístico",
+    color: "#33A8FF", // Azul Claro
+    description: "Zona destinada a la construcción de hoteles y moteles.",
+  },
+  {
+    id: 12,
+    key: "CO",
+    name: "Corredor Turístico",
+    color: "#FF6F33", // Mandarina
+    description: "Zona destinada a la construcción de corredores turísticos.",
+  },
+];
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -16,6 +104,21 @@ export default function Home() {
   function handleSearch(e) {
     e.preventDefault();
   }
+
+  const colorVariants = {
+    H: "bg-[#FF5733]",
+    HP: "bg-[#33FF57]",
+    TR: "bg-[#3357FF]",
+    CU: "bg-[#FF33A8]",
+    M: "bg-[#FF8C33]",
+    E: "bg-[#33FFF2]",
+    IN: "bg-[#FFC733]",
+    Z: "bg-[#33FF85]",
+    PC: "bg-[#C733FF]",
+    V: "bg-[#FF3333]",
+    AT: "bg-[#33A8FF]",
+    CO: "bg-[#FF6F33]",
+  };
 
   return (
     <main className="min-h-screen grid grid-cols-6">
@@ -54,13 +157,13 @@ export default function Home() {
                   Selecciona uno o varios tipos de zona
                 </p>
                 <div className="grid grid-cols-2 gap-2 mt-2">
-                  {zoneTypes.map((type) => (
+                  {secondaryZoneTypes.map((type) => (
                     <div
                       className="text-xs flex gap-2 border rounded p-1 cursor-pointer hover:bg-zinc-100"
                       key={type.id}
                     >
                       <div
-                        className={`w-4 h-4 rounded ${type.bgClass} opacity-80`}
+                        className={`w-4 h-4 rounded ${colorVariants[type.key]} opacity-80`}
                       ></div>
                       <span>{type.name}</span>
                     </div>
