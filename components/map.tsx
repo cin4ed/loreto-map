@@ -4,6 +4,7 @@ import mapboxgl from "mapbox-gl";
 // import "mapbox-gl/dist/mapbox-gl.css";
 import { useRef, useEffect, useState } from "react";
 import { type ZoneType, zoneTypes, getZoneTypeByKey } from "@/lib/utils";
+// import { Satellite } from "lucide-react";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
 
@@ -15,6 +16,7 @@ export default function Map() {
   const [zoom, setZoom] = useState(16.46);
   const [selectedZone, setSelectedZone] = useState<ZoneType | null>(null);
   const [hoveredZone, setHoveredZone] = useState<ZoneType | null>(null);
+  const [satelliteStyleActive, setSatelliteStyleActive] = useState(false);
 
   useEffect(() => {
     // Initialize map only once
@@ -137,9 +139,17 @@ export default function Map() {
   });
 
   function toggleSatelliteLayer() {
-    const source = map.current?.getStyle().source;
-    map.current?.setStyle("mapbox://styles/mapbox/satellite-streets-v11");
-    // map.current?.addSource("ezone-dataset", source);
+    if (satelliteStyleActive) {
+      map.current?.setStyle(
+        "mapbox://styles/kenneth-quintero/cm043gkrp00eo01pwcjwxfbmj",
+      );
+    } else {
+      map.current?.setStyle(
+        "mapbox://styles/kenneth-quintero/cm0779bkn00l901rba1jl7apd",
+      );
+    }
+
+    setSatelliteStyleActive(!satelliteStyleActive);
   }
 
   return (
@@ -149,7 +159,7 @@ export default function Map() {
         onClick={toggleSatelliteLayer}
         className="absolute z-10 top-24 right-0 m-2 p-2 rounded border bg-background block w-8 h-8 text-xs shadow hover:bg-background/20 active:bg-secondary"
       >
-        S
+        {satelliteStyleActive ? "🌍" : "🛰️"}
       </button>
       {/* Show lng, lat and zoom area */}
       <div className="absolute z-10 m-2 top-0 left-0 text-xs text-muted-foreground rounded border p-1 bg-muted opacity-50 hover:opacity-100">
